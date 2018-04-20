@@ -1,7 +1,7 @@
 /*
 **** random_devotion ****
 listens to a geiger counter and compares them with human knocks, knocks back if both match
-loosely based on http://www.arduino.cc/en/Tutorial/ButtonStateChange and https://learn.adafruit.com/secret-knock-activated-drawer-lock/code
+based on http://www.arduino.cc/en/Tutorial/ButtonStateChange and https://learn.adafruit.com/secret-knock-activated-drawer-lock/code
 */
 
 // this constant won't change:
@@ -46,8 +46,14 @@ int knockHumanReadings[maximumHumanKnocks];
 int matchCounter = 0;
 unsigned long startKnocking = absTime;
 int endKnocking = 0;
+//set up a counter and timerfor the solenoid knocks-interval timing
+int ucounter = 0;
+unsigned long currentTimeInterval = 0;
+unsigned long real_startTimeInterval;
+unsigned long absTimeInterval = currentTimeInterval - real_startTimeInterval;
 
 void setup() {
+  unsigned long real_startTime = millis();
   // intitialize solenoid pin
   pinMode(4, OUTPUT);
   // initialize the button pin as a input:
@@ -55,7 +61,7 @@ void setup() {
   // initialize the LED as an output:
   pinMode(ledPin, OUTPUT);
   // initialize serial communication:
-  Serial.begin(9600);
+  Serial.begin(115200);
   // get some values in both arrays (pulses and knocks)
   for (int i = 0; i < 5; i++){
     knockReadings[i] = 0;
@@ -68,6 +74,7 @@ void loop() {
   // set an absolute time
   unsigned long currentTime = millis();
   unsigned long absTime = currentTime - real_startTime;
+  //Serial.println(absTime);
   // read the pushbutton input pin
   buttonState = digitalRead(buttonPin);
 
@@ -140,13 +147,14 @@ void loop() {
       Serial.println(matchCounter);
       if (matchCounter > 0) {
         Serial.println("You're in sync - the Stone will knock back at you"); 
-        currentTime = millis();
-        absTime = currentTime - real_startTime;
-        Serial.println(absTime);
-        startKnocking = absTime;
-        endKnocking = startKnocking + 5000;
-        Serial.println(absTime);
-        while (millis() - startKnocking < endKnocking) {
+        //Serial.println(absTime);
+        //startKnocking = absTime;
+        real_startTimeInterval = millis();
+        while (absTimeInterval < 15000) {
+          //Serial.println(absTimeInterval);
+          //measure the time again
+          currentTimeInterval = millis();
+          absTimeInterval = currentTimeInterval - real_startTimeInterval;
           //Serial.println(endKnocking);
           if (digitalRead(12) == HIGH) {
             digitalWrite(4, HIGH);   // turn the LED on (HIGH is the voltage level)
@@ -158,12 +166,15 @@ void loop() {
             digitalWrite(4, LOW);    // turn the LED off by making the voltage LOW
           }
         }
-        matchCounter = 0;
-        Serial.println("yo");
-        endKnocking = 0;
+        matchCounter=0;
+        absTimeInterval = 0;
+        //endKnocking = 0;
+        //startKnocking = 0;
+        //Serial.println("yo");
       }
       else {
         matchCounter = 0;
+        Serial.println("yo");
       }
     }
   lastKnockSensorValue = knockSensorValue;
@@ -202,7 +213,61 @@ void loop() {
       buttonPushCounterOld = buttonPushCounter;
       digitalWrite(ledPin, LOW);
     }
+    // Delay a little bit to avoid bouncing
+    //delay(50);
+//    if (buttonPushCounter ==  maximumKnocks) {
+//      Serial.println("time stamps for last 5 knocks and last 5 particles");
+//      for (int i = 0; i < maximumHumanKnocks; i++) {
+//        Serial.print(knockHumanReadings[i]); 
+//        Serial.print(" ");
+//        Serial.print(knockReadings[i]);
+//        if (knockHumanReadings[i] - knockReadings[i] > - 30 && knockHumanReadings[i] - knockReadings[i] <  30){
+//          Serial.println(" -> close match");
+//          matchCounter ++;
+//        }
+//        else {
+//          Serial.println("");
+//        }
+//      }
+//      buttonPushCounter = 0;
+//      Serial.println("CloseMatches:");
+//      Serial.println(matchCounter);
+//      if (matchCounter > 0) {
+//        matchCounter = 0;
+//        Serial.println("You're in sync - the Stone will knock back at you"); 
+//        startKnocking = millis();
+//        endKnocking = startKnocking + 15000;
+//        while (millis() < endKnocking) {
+//          Serial.println("yo");
+//          if (digitalRead(12) == HIGH) {
+//            digitalWrite(4, HIGH);   // turn the LED on (HIGH is the voltage level)
+//            delay(100);                       // wait for a moment
+//            digitalWrite(4, LOW);
+//            delay(50);
+//          } 
+//          else {
+//            digitalWrite(4, LOW);    // turn the LED off by making the voltage LOW
+//            //delay(50); // wait for a second
+//          }
+//        }
+//      }
+//      else {
+//        matchCounter = 0;
+//      }
+//    }
   }
   // save the current state as the last state, for next time through the loop
   lastButtonState = buttonState;
 }
+
+
+  // turns on the LED every four button pushes by checking the modulo of the
+  // button push counter. the modulo function gives you the remainder of the
+  // division of two numbers:
+//   if (buttonState == HIGH) {
+//     digitalWrite(ledPin, HIGH);
+//   } else {
+//     digitalWrite(ledPin, LOW);
+//   }
+//
+// }
