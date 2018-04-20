@@ -1,7 +1,7 @@
 /*
 **** random_devotion ****
 listens to a geiger counter and compares them with human knocks, knocks back if both match
-based on http://www.arduino.cc/en/Tutorial/ButtonStateChange and https://learn.adafruit.com/secret-knock-activated-drawer-lock/code
+loosely based on http://www.arduino.cc/en/Tutorial/ButtonStateChange and https://learn.adafruit.com/secret-knock-activated-drawer-lock/code
 */
 
 // this constant won't change:
@@ -202,61 +202,7 @@ void loop() {
       buttonPushCounterOld = buttonPushCounter;
       digitalWrite(ledPin, LOW);
     }
-    // Delay a little bit to avoid bouncing
-    //delay(50);
-//    if (buttonPushCounter ==  maximumKnocks) {
-//      Serial.println("time stamps for last 5 knocks and last 5 particles");
-//      for (int i = 0; i < maximumHumanKnocks; i++) {
-//        Serial.print(knockHumanReadings[i]); 
-//        Serial.print(" ");
-//        Serial.print(knockReadings[i]);
-//        if (knockHumanReadings[i] - knockReadings[i] > - 30 && knockHumanReadings[i] - knockReadings[i] <  30){
-//          Serial.println(" -> close match");
-//          matchCounter ++;
-//        }
-//        else {
-//          Serial.println("");
-//        }
-//      }
-//      buttonPushCounter = 0;
-//      Serial.println("CloseMatches:");
-//      Serial.println(matchCounter);
-//      if (matchCounter > 0) {
-//        matchCounter = 0;
-//        Serial.println("You're in sync - the Stone will knock back at you"); 
-//        startKnocking = millis();
-//        endKnocking = startKnocking + 15000;
-//        while (millis() < endKnocking) {
-//          Serial.println("yo");
-//          if (digitalRead(12) == HIGH) {
-//            digitalWrite(4, HIGH);   // turn the LED on (HIGH is the voltage level)
-//            delay(100);                       // wait for a moment
-//            digitalWrite(4, LOW);
-//            delay(50);
-//          } 
-//          else {
-//            digitalWrite(4, LOW);    // turn the LED off by making the voltage LOW
-//            //delay(50); // wait for a second
-//          }
-//        }
-//      }
-//      else {
-//        matchCounter = 0;
-//      }
-//    }
   }
   // save the current state as the last state, for next time through the loop
   lastButtonState = buttonState;
 }
-
-
-  // turns on the LED every four button pushes by checking the modulo of the
-  // button push counter. the modulo function gives you the remainder of the
-  // division of two numbers:
-//   if (buttonState == HIGH) {
-//     digitalWrite(ledPin, HIGH);
-//   } else {
-//     digitalWrite(ledPin, LOW);
-//   }
-//
-// }
