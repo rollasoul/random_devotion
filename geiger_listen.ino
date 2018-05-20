@@ -10,10 +10,10 @@ const int ledPin = 13;       // the pin that the LED is attached to
 const int maximumKnocks = 5;      // Maximum number of geiger pulses to listen for
 const int maximumHumanKnocks = 5; // max amount of human knocks to listen for
 
-const int minmumMatchPerCent = 60;
+const int minmumMatchPerCent = 6;
 
 const int knockSensor = A1; // listens to piezo-knocks
-const int threshold = 80; // sensitivity of knock-sensor
+const int threshold = 13; // sensitivity of knock-sensor
 
 // Variables will change:
 int buttonPushCounter = 0;   // counter for the number of button presses
@@ -61,7 +61,7 @@ void setup() {
   // initialize the LED as an output:
   pinMode(ledPin, OUTPUT);
   // initialize serial communication:
-  Serial.begin(115200);
+  Serial.begin(9600);
   // get some values in both arrays (pulses and knocks)
   for (int i = 0; i < 5; i++){
     knockReadings[i] = 0;
@@ -123,7 +123,7 @@ void loop() {
         Serial.print(" ");
         Serial.print(knockReadings[i]);
         if (buttonPushCounter > 0){
-          if (knockHumanReadings[i] - knockReadings[i] > - 40 && knockHumanReadings[i] - knockReadings[i] <  40){
+          if (knockHumanReadings[i] - knockReadings[i] > - 10 && knockHumanReadings[i] - knockReadings[i] <  10){
             Serial.println(" -> close match");
             matchCounter ++;
             }
@@ -145,7 +145,7 @@ void loop() {
       buttonPushCounter = 0;
       Serial.println("CloseMatches:");
       Serial.println(matchCounter);
-      if (matchCounter > 0) {
+      if (matchCounter > 2) {
         Serial.println("You're in sync - the Stone will knock back at you"); 
         //Serial.println(absTime);
         //startKnocking = absTime;
